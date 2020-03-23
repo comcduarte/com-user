@@ -1,0 +1,48 @@
+<?php 
+use Laminas\Navigation\Page\Mvc;
+
+if ($user = $this->currentUser()) { 
+?>
+<span class="navbar-text">&nbsp;</span>
+<ul class="navbar-nav">
+        	<?php
+    $navHelper = $this->navigation('Laminas\Navigation\User');
+    $containers = $navHelper->getContainer();
+    foreach ($containers->getpages() as $page) {
+        $class = "";
+        if ($page->isActive()) {
+            $class = "active";
+        }
+
+        if (count($page)) {
+            $label = $page->getLabel();
+            if ($label == 'Welcome') {
+                $label = "Welcome $user->FNAME $user->LNAME";
+            }
+            $label = $this->translate($label);
+            $label = $this->escapehtml($label);
+            printf('<li class="nav-item dropdown %s">' . "\n", ($class ? '' . $class : ''));
+            printf('<a href="%s" class="nav-link dropdown-toggle" data-toggle="dropdown">%s<b class="caret"></b></a>' . "\n", $page->getHref(), $label);
+            echo '<div class="dropdown-menu" aria-labelledby="navbarDropdown">' . "\n";
+
+            foreach ($page as $subPage) {
+                if (! $navHelper->accept($subPage)) {
+                    continue;
+                }
+                $label = $subPage->getLabel();
+                if ($label == 'Change Password') { 
+                    $temp = new Mvc();
+                    $subPage->setParams(['uuid' => $user->UUID]);
+                }
+                printf('<a class="dropdown-item" href="%s">%s</a>' . "\n", $subPage->getHref(), $subPage->getLabel());
+            }
+            echo '</div></li>' . "\n";
+        } else {
+            printf('<li class="nav-item %s"><a class="nav-link" href="%s">%s</a></li>' . "\n", $class, $page->getHref(), $page->getLabel());
+        }
+    }
+    ?>
+        	</ul>
+<?php } else { ?>
+<a href="<?=$this->url('user/login');?>" class="navbar-brand">Login</a>
+<?php } ?>

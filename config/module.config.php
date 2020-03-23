@@ -1,6 +1,16 @@
 <?php 
-
+use Laminas\Authentication\AuthenticationService;
+use Laminas\Router\Http\Literal;
+use Laminas\Router\Http\Segment;
+use Laminas\Session\Storage\SessionArrayStorage;
+use Laminas\Session\Validator\HttpUserAgent;
+use Laminas\Session\Validator\RemoteAddr;
+use User\Authentication\AuthAdapter;
+use User\Authentication\Factory\AuthAdapterFactory;
+use User\Form\UserForm;
 use User\Form\Factory\UserFormFactory;
+use User\Service\Factory\AuthenticationServiceFactory;
+use User\Service\Factory\UserModelAdapterFactory;
 
 return [
     'router' => [
@@ -28,6 +38,28 @@ return [
                             ],
                         ],
                     ],
+                    'login' => [
+                        'type' => Literal::class,
+                        'priority' => 10,
+                        'options' => [
+                            'route' => '/login',
+                            'defaults' => [
+                                'controller' => User\Controller\AuthController::class,
+                                'action' => 'login',
+                            ],
+                        ],
+                    ],
+                    'logout' => [
+                        'type' => Literal::class,
+                        'priority' => 10,
+                        'options' => [
+                            'route' => '/logout',
+                            'defaults' => [
+                                'controller' => User\Controller\AuthController::class,
+                                'action' => 'logout',
+                            ],
+                        ],
+                    ],
                     'default' => [
                         'type' => Segment::class,
                         'priority' => -100,
@@ -45,6 +77,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
+            User\Controller\AuthController::class => User\Controller\Factory\AuthControllerFactory::class,
             User\Controller\UserController::class => User\Controller\Factory\UserControllerFactory::class,
             User\Controller\UserConfigController::class => User\Controller\Factory\UserConfigControllerFactory::class,
         ],
@@ -86,13 +119,57 @@ return [
                 ],
             ],
         ],
+        'user' => [
+            [
+                'label' => 'Welcome',
+                'route' => 'user',
+                'pages' => [
+                    [
+                        'label' => 'Logout',
+                        'route' => 'user/logout',
+                        'controller' => 'auth',
+                        'action' => 'logout',
+                    ],
+                    [
+                        'label' => 'Change Password',
+                        'route' => 'user/default',
+                        'controller' => 'user',
+                        'action' => 'changepw',
+                    ],
+                ],
+            ],
+        ],
     ],
     'service_manager' => [
         'aliases' => [
             'user-model-adapter-config' => 'model-adapter-config',
+            AuthenticationService::class => 'auth-service',
         ],
         'factories' => [
-            'user-model-adapter' => User\Service\Factory\UserModelAdapterFactory::class,
+            'user-model-adapter' => UserModelAdapterFactory::class,
+            AuthAdapter::class => AuthAdapterFactory::class,
+            'auth-service' => AuthenticationServiceFactory::class,
+        ],
+    ],
+    'session_config' => [
+        'cookie_lifetime' => 3600,
+        'gc_maxlifetime'     => 2592000,
+    ],
+    'session_manager' => [
+        'validators' => [
+            RemoteAddr::class,
+            HttpUserAgent::class,
+        ]
+    ],
+    'session_storage' => [
+        'type' => SessionArrayStorage::class
+    ],
+    'view_helpers' => [
+        'factories' => [
+            User\View\Helper\CurrentUser::class => User\View\Helper\Factory\CurrentUserFactory::class,
+        ],
+        'aliases' => [
+            'currentUser' => User\View\Helper\CurrentUser::class,
         ],
     ],
     'view_manager' => [
