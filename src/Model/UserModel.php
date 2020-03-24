@@ -55,4 +55,12 @@ class UserModel extends AbstractBaseModel
         
         return $this->inputFilter;
     }
+    
+    public function changePassword($password)
+    {
+        $bcrypt = new Bcrypt();
+        $this->PASSWORD = $bcrypt->create($password);
+        $this->update();
+        return $this;
+    }
 }

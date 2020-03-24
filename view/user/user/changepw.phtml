@@ -1,0 +1,30 @@
+<?php 
+$title = "Change Password";
+$this->headtitle($title);
+
+$form->setAttribute('action', $this->url('user/default', ['action' => 'changepw', 'uuid' => $this->uuid]));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+?>
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-6">
+        	<img class="mb-4" src="<?= $this->basePath('img/cityseal.png') ?>" alt="" width="72" height="72">
+        	<div class="form-group">
+				<?php echo $this->formRow($form->get('SECURITY')); ?>
+			</div>
+			<div class="form-group">
+				<?php echo $this->formRow($form->get('PASSWORD')); ?>
+			</div>
+			<div class="form-group">
+        		<?php echo $this->formRow($form->get('CONFIRM_PASSWORD')); ?>
+        	</div>
+			<div class="form-group">
+				<?php echo $this->formRow($form->get('SUBMIT')); ?>
+			</div>
+        </div>
+    </div>
+</div>
+<?php echo $this->form()->closeTag($form); ?>

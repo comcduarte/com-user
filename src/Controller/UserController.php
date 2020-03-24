@@ -7,6 +7,7 @@ use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\View\Model\ViewModel;
+use User\Form\UserChangePasswordForm;
 
 class UserController extends AbstractBaseController
 {
@@ -65,5 +66,46 @@ class UserController extends AbstractBaseController
         
         $view = parent::updateAction();
         return $view;
+    }
+    
+    public function changepwAction()
+    {
+        $uuid = $this->params()->fromRoute('uuid', 0);
+        if (!$uuid) {
+            $this->flashmessenger()->addErrorMessage('Did not pass identifier.');
+            return $this->redirect()->toRoute('user/default');
+        }
+        
+        $this->model->read(['UUID' => $uuid]);
+        
+        $form = new UserChangePasswordForm();
+        $form->init();
+        $form->setInputFilter($this->model->getInputFilter());
+        
+        
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $form->setInputFilter($this->model->getInputFilter());
+            $form->setData($request->getPost());
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $result = $this->model->changePassword($data['PASSWORD']);
+                
+                if ($result) {
+                    $this->flashmessenger()->addSuccessMessage('Password Change Successful');
+                } else {
+                    $this->flashmessenger()->addErrorMessage('Unable to change password');
+                }
+                
+                return $this->redirect()->toRoute('user/default');
+            }
+            
+        }
+        
+        return ([
+            'form' => $form,
+            'uuid' => $uuid,
+        ]);
+        
     }
 }
