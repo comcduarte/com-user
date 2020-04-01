@@ -2,7 +2,6 @@
 namespace User\Controller;
 
 use Components\Controller\AbstractConfigController;
-use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Db\Adapter\AdapterAwareTrait;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Ddl\CreateTable;
@@ -89,6 +88,7 @@ class UserConfigController extends AbstractConfigController
         $ddl->addColumn(new Datetime('DATE_MODIFIED', TRUE));
         
         $ddl->addColumn(new Varchar('ROLENAME', 100, TRUE));
+        $ddl->addColumn(new Varchar('PARENT', 36, TRUE));
         
         $ddl->addConstraint(new PrimaryKey('UUID'));
         
@@ -114,12 +114,9 @@ class UserConfigController extends AbstractConfigController
          * Create Default Users
          ******************************/
         $user = new UserModel($this->adapter);
-        $bcrypt = new Bcrypt();
-        
-        $user = new UserModel($this->adapter);
         $user->FNAME = 'Administrator';
         $user->USERNAME = 'Admin';
-        $user->PASSWORD = $bcrypt->create('admin');
+        $user->PASSWORD = 'admin';
         $user->STATUS = $user::ACTIVE_STATUS;
         $user->create();
         
@@ -127,7 +124,7 @@ class UserConfigController extends AbstractConfigController
         $user->UUID = 'SYSTEM';
         $user->FNAME = 'SYSTEM';
         $user->USERNAME = 'SYSTEM';
-        $user->PASSWORD = $bcrypt->create('admin');
+        $user->PASSWORD = '5Y5T3M';
         $user->STATUS = $user::ACTIVE_STATUS;
         $user->create();
         

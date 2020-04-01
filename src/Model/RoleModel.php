@@ -6,6 +6,7 @@ use Components\Model\AbstractBaseModel;
 class RoleModel extends AbstractBaseModel
 {
     public $ROLENAME;
+    public $PARENT;
     
     public function __construct($adapter = NULL)
     {

@@ -1,0 +1,78 @@
+<div class="row">
+	<div class="col-md">
+        <div class="card mb-4">
+        <?php
+        $this->form->prepare();
+        echo $this->form()->openTag($form);
+        ?>
+        	<div class="card-header d-flex justify-content-between">
+        		<div>
+        			<b>Update Record</b>
+        		</div>
+        	</div>
+        	
+        	<div class="card-body">
+        		<?php echo $this->formCollection($this->form); ?>
+        	</div>
+        <?php echo $this->form()->closeTag($this->form); ?>
+        </div>
+    </div>
+    <div class="col-md">
+    	
+    	<div class="col" style="max-height: 350px; overflow-y: auto;">
+    		
+        	<?php 
+        	/**
+        	 * Set form to false if a modal dialog does not exist.
+        	 */
+        	
+        	echo $this->partial('base/subtable', [
+        	    'title' => 'Role Membership',
+//         	    'form' => FALSE,
+        	    'form' => [
+        	        'title' => 'Assign Role',
+        	        'name' => 'user_roles_form',
+        	    ],
+        	    'data' => $this->roles,
+        	    'primary_key' => 'UUID',
+        	    'route' => 'user/default',
+        	    'params' => [
+        	        [
+        	            'key' => 'UUID_ROLE',
+        	            'action' => 'update',
+        	            'route' => 'role/default',
+        	            'label' => 'Update',
+        	        ],
+        	        [
+        	           'key' => 'UUID',
+        	           'action' => 'unassign',
+        	           'route' => 'user/default',
+        	           'label' => 'Unassign',
+        	        ],
+        	    ],
+        	]);
+        	        ?>
+		</div>
+    </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="modal fade" id="modal-user_roles_form" tabindex="-1" role="dialog" aria-labelledby="modalForm" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<?php 
+		$this->user_roles_form->prepare();
+		$this->user_roles_form->setAttribute('action', $this->url('user/default', ['action' => 'assign']));
+		
+		$this->user_roles_form->get('USER')->setAttributes(['value' => $this->uuid]);
+		
+		echo $this->form()->openTag($this->user_roles_form);
+		echo $this->formCollection($this->user_roles_form);
+		echo $this->form()->closeTag($this->user_roles_form);
+		
+		
+		
+		?>
+		</div>
+	</div>
+</div>

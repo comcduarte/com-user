@@ -28,7 +28,7 @@ class AuthController extends AbstractActionController
             $form->setData($request->getPost());
             if (!$form->isValid()) {
                 $this->flashMessenger()->addErrorMessage('Form Invalid.');
-                $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);
+                $this->redirect()->toRoute('user/login');
             } else {
                 $data = $form->getData();
                 $this->setAuthentication_adapter($this->authentication_service->getAdapter());

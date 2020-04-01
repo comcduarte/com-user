@@ -8,13 +8,40 @@ use Laminas\Session\Validator\RemoteAddr;
 use User\Authentication\AuthAdapter;
 use User\Authentication\Factory\AuthAdapterFactory;
 use User\Form\UserForm;
+use User\Form\UserRolesForm;
 use User\Form\Factory\UserFormFactory;
+use User\Form\Factory\UserRolesFormFactory;
 use User\Service\Factory\AuthenticationServiceFactory;
 use User\Service\Factory\UserModelAdapterFactory;
 
 return [
     'router' => [
         'routes' => [
+            'role' => [
+                'type' => Literal::class,
+                'priority' => 1,
+                'options' => [
+                    'route' => '/role',
+                    'defaults' => [
+                        'action' => 'index',
+                        'controller' => User\Controller\RoleController::class,
+                    ],
+                ],
+                'may_terminate' => TRUE,
+                'child_routes' => [
+                    'default' => [
+                        'type' => Segment::class,
+                        'priority' => -100,
+                        'options' => [
+                            'route' => '/[:action[/:uuid]]',
+                            'defaults' => [
+                                'action' => 'index',
+                                'controller' => User\Controller\RoleController::class,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             'user' => [
                 'type' => Literal::class,
                 'priority' => 1,
@@ -75,9 +102,26 @@ return [
             ],
         ],
     ],
+    'acl' => [
+        'guest' => [
+            'user/login' => NULL,
+            'user/logout' => NULL,
+            'user/config' => NULL,
+            // @ TODO: Logout is only allowed for guests to clear identities in case of emergency.  Remove once checks and balances operate.
+        ],
+        'member' => [
+            'user/default' => NULL,
+            'role/default' => NULL,
+        ],
+        'admin' => [
+            'user/config' => NULL,
+            'user/logout' => ['logout'],
+        ],
+    ],
     'controllers' => [
         'factories' => [
             User\Controller\AuthController::class => User\Controller\Factory\AuthControllerFactory::class,
+            User\Controller\RoleController::class => User\Controller\Factory\RoleControllerFactory::class,
             User\Controller\UserController::class => User\Controller\Factory\UserControllerFactory::class,
             User\Controller\UserConfigController::class => User\Controller\Factory\UserConfigControllerFactory::class,
         ],
@@ -85,14 +129,33 @@ return [
     'form_elements' => [
         'factories' => [
             UserForm::class => UserFormFactory::class,
+            UserRolesForm::class => UserRolesFormFactory::class,
         ],
     ],
     'navigation' => [
         'default' => [
+            'role' => [
+                'label' => 'Role',
+                'route' => 'role',
+                'class' => 'dropdown',
+                'order' => 80,
+                'pages' => [
+                    [
+                        'label' => 'Add New Role',
+                        'route' => 'role/default',
+                        'action' => 'create',
+                    ],
+                    [
+                        'label' => 'List Roles',
+                        'route' => 'role/default',
+                    ],
+                ],
+            ],
             'user' => [
                 'label' => 'User',
                 'route' => 'user',
                 'class' => 'dropdown',
+                'order' => 90,
                 'pages' => [
                     [
                         'label' => 'Add New User',
@@ -175,6 +238,7 @@ return [
     'view_manager' => [
         'template_map' => [
             'user/config' => __DIR__ . '/../view/user/config/index.phtml',
+            'user/update' => __DIR__ . '/../view/user/user/update.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',

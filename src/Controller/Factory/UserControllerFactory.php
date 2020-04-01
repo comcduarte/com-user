@@ -4,8 +4,9 @@ namespace User\Controller\Factory;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use User\Controller\UserController;
-use User\Model\UserModel;
 use User\Form\UserForm;
+use User\Form\UserRolesForm;
+use User\Model\UserModel;
 
 class UserControllerFactory implements FactoryInterface
 {
@@ -17,6 +18,10 @@ class UserControllerFactory implements FactoryInterface
         
         $model = new UserModel($adapter);
         $form = $container->get('FormElementManager')->get(UserForm::class);
+        
+        $user_roles_form = $container->get('FormElementManager')->get(UserRolesForm::class);
+        $user_roles_form->setDbAdapter($adapter);
+        $controller->user_roles_form = $user_roles_form;
         
         $controller->setModel($model);
         $controller->setForm($form);
