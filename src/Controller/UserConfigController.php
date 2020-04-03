@@ -12,6 +12,7 @@ use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 use Laminas\View\Model\ViewModel;
 use User\Model\UserModel;
+use User\Model\RoleModel;
 
 class UserConfigController extends AbstractConfigController
 {
@@ -27,7 +28,7 @@ class UserConfigController extends AbstractConfigController
         $view = new ViewModel();
         $view = parent::indexAction();
         
-        $view->setTemplate('user/config');
+        $view->setTemplate('base/config');
         
         return $view;
     }
@@ -111,6 +112,19 @@ class UserConfigController extends AbstractConfigController
         unset($ddl);
         
         /******************************
+         * Create Default Roles
+         ******************************/
+        $role = new RoleModel($this->adapter);
+        $role->UUID = $role->generate_uuid();
+        $role->ROLENAME = 'guest';
+        $role->create();
+        
+        $role->UUID = $role->generate_uuid();
+        $role_admin = $role->UUID;
+        $role->ROLENAME = 'admin';
+        $role->create();
+        
+        /******************************
          * Create Default Users
          ******************************/
         $user = new UserModel($this->adapter);
@@ -119,6 +133,12 @@ class UserConfigController extends AbstractConfigController
         $user->PASSWORD = 'admin';
         $user->STATUS = $user::ACTIVE_STATUS;
         $user->create();
+        
+        $user->assignRole([
+            'UUID' => $user->generate_uuid(),
+            'USER' => $user->UUID,
+            'ROLE' => $role_admin,
+        ]);
         
         $user = new UserModel($this->adapter);
         $user->UUID = 'SYSTEM';

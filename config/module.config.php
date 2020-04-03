@@ -104,17 +104,11 @@ return [
     ],
     'acl' => [
         'guest' => [
-            'user/login' => NULL,
-            'user/logout' => NULL,
-            'user/config' => NULL,
-            // @ TODO: Logout is only allowed for guests to clear identities in case of emergency.  Remove once checks and balances operate.
-        ],
-        'member' => [
-            'user/default' => NULL,
-            'role/default' => NULL,
+            'user/config' => ['create','clear','index'],
+            'user/login' => ['login'],
         ],
         'admin' => [
-            'user/config' => NULL,
+            'user/config' => ['create','clear','index'],
             'user/logout' => ['logout'],
         ],
     ],
