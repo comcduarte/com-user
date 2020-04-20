@@ -1,8 +1,8 @@
 <?php 
 namespace User\Controller;
 
-use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Db\Adapter\AdapterAwareTrait;
+use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
 class AuthController extends AbstractActionController
@@ -38,10 +38,11 @@ class AuthController extends AbstractActionController
                 if ($result->isValid()) {
                     $storage = $this->authentication_service->getStorage();
                     $storage->write($data['USERNAME']);
-                    $this->flashMessenger()->addMessage('You have successfully logged in');
+                    
+                    $this->flashMessenger()->addMessage($result->getMessages());
                     $this->redirect()->toRoute('home');
                 } else {
-                    $this->flashMessenger()->addMessage('Login Failed. Invalid username or password.');
+                    $this->flashMessenger()->addMessage($result->getMessages());
                     $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);
                 }
             }

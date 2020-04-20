@@ -3,8 +3,11 @@ namespace User\Model;
 
 use Components\Model\AbstractBaseModel;
 use Laminas\Crypt\Password\Bcrypt;
+use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Delete;
 use Laminas\Db\Sql\Insert;
+use Laminas\Db\Sql\Join;
+use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Validator\Identical;
 use Exception;
@@ -112,5 +115,29 @@ class UserModel extends AbstractBaseModel
             return $e;
         }
         return true;
+    }
+    
+    /**
+     * Return array for role membership
+     */
+    public function memberOf()
+    {
+        $role = new RoleModel($this->adapter);
+        
+        $sql = new Sql($this->adapter);
+        $select = new Select();
+        $select->from('user_roles')->where(['USER' => $this->UUID]);
+        $select->join($role->getTableName(), 'user_roles.ROLE = roles.UUID', ['ROLENAME'], Join::JOIN_INNER);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = new ResultSet();
+        try {
+            $results = $statement->execute();
+            $resultSet->initialize($results);
+        } catch (Exception $e) {
+            return FALSE;
+        }
+        
+        return $resultSet->toArray();
     }
 }

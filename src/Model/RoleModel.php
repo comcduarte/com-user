@@ -7,6 +7,7 @@ class RoleModel extends AbstractBaseModel
 {
     public $ROLENAME;
     public $PARENT;
+    public $PRIORITY;
     
     public function __construct($adapter = NULL)
     {

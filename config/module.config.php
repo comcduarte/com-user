@@ -6,7 +6,9 @@ use Laminas\Session\Storage\SessionArrayStorage;
 use Laminas\Session\Validator\HttpUserAgent;
 use Laminas\Session\Validator\RemoteAddr;
 use User\Authentication\AuthAdapter;
+use User\Authentication\LdapAdapter;
 use User\Authentication\Factory\AuthAdapterFactory;
+use User\Authentication\Factory\LdapAdapterFactory;
 use User\Form\UserForm;
 use User\Form\UserRolesForm;
 use User\Form\Factory\UserFormFactory;
@@ -103,13 +105,15 @@ return [
         ],
     ],
     'acl' => [
-        'guest' => [
+        'EVERYONE' => [
             'user/config' => ['create','clear','index'],
             'user/login' => ['login'],
+            'user/logout' => ['logout'],
         ],
         'admin' => [
-            'user/config' => ['create','clear','index'],
-            'user/logout' => ['logout'],
+            'user/config' => [],
+            'user/default' => [],
+            'role/default' => [],
         ],
     ],
     'controllers' => [
@@ -200,12 +204,14 @@ return [
     'service_manager' => [
         'aliases' => [
             'user-model-adapter-config' => 'model-adapter-config',
-            AuthenticationService::class => 'auth-service',
+            'auth-service' => AuthenticationService::class,
+            'auth-adapter' => LdapAdapter::class,
         ],
         'factories' => [
             'user-model-adapter' => UserModelAdapterFactory::class,
             AuthAdapter::class => AuthAdapterFactory::class,
-            'auth-service' => AuthenticationServiceFactory::class,
+            AuthenticationService::class => AuthenticationServiceFactory::class,
+            LdapAdapter::class => LdapAdapterFactory::class,
         ],
     ],
     'session_config' => [

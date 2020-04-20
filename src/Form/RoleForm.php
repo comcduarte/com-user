@@ -36,5 +36,18 @@ class RoleForm extends AbstractBaseForm
                 'label' => 'Parent Role',
             ],
         ],['priority' => 100]);
+        
+        $this->add([
+            'name' => 'PRIORITY',
+            'type' => Text::class,
+            'attributes' => [
+                'class' => 'form-control',
+                'id' => 'PRIORITY',
+                'placeholder' => '',
+            ],
+            'options' => [
+                'label' => 'Priority',
+            ],
+        ],['priority' => 100]);
     }
 }

@@ -13,6 +13,7 @@ use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 use Laminas\View\Model\ViewModel;
 use User\Model\UserModel;
 use User\Model\RoleModel;
+use Settings\Model\SettingsModel;
 
 class UserConfigController extends AbstractConfigController
 {
@@ -45,6 +46,8 @@ class UserConfigController extends AbstractConfigController
         foreach ($ddl as $obj) {
             $this->adapter->query($sql->buildSqlString($obj), $this->adapter::QUERY_MODE_EXECUTE);
         }
+        
+        $this->clearSettings('USER');
     }
     
     public function createDatabase()
@@ -90,6 +93,7 @@ class UserConfigController extends AbstractConfigController
         
         $ddl->addColumn(new Varchar('ROLENAME', 100, TRUE));
         $ddl->addColumn(new Varchar('PARENT', 36, TRUE));
+        $ddl->addColumn(new Integer('PRIORITY', TRUE));
         
         $ddl->addConstraint(new PrimaryKey('UUID'));
         
@@ -116,7 +120,7 @@ class UserConfigController extends AbstractConfigController
          ******************************/
         $role = new RoleModel($this->adapter);
         $role->UUID = $role->generate_uuid();
-        $role->ROLENAME = 'guest';
+        $role->ROLENAME = 'EVERYONE';
         $role->create();
         
         $role->UUID = $role->generate_uuid();
@@ -149,5 +153,27 @@ class UserConfigController extends AbstractConfigController
         $user->create();
         
         $this->flashMessenger()->addSuccessMessage('Admin users created.');
+        
+        $this->createSettings('USER');
+        $this->flashMessenger()->addSuccessMessage('User Settings created.');
+    }
+    
+    public function createSettings($module)
+    {
+        parent::createSettings($module);
+        $setting = new SettingsModel($this->adapter);
+        $setting->MODULE = $module;
+        
+        $settings = [
+            'LDAP_DOMAIN',
+            'LDAP_SERVER',
+            'LDAP_BASE_DN',
+        ];
+        
+        foreach ($settings as $rec) {
+            $setting->UUID = $setting->generate_uuid();
+            $setting->SETTING = $rec;
+            $setting->create();
+        }
     }
 }
