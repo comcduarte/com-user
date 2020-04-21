@@ -108,7 +108,8 @@ class LdapAdapter implements AdapterInterface
             $matching_roles = array_intersect($ary_roles, $ary_ldap_groups);
             
             if (sizeof($matching_roles)) {
-                $this->update_ldap_user($info[0]);
+                $user = $this->update_ldap_user($info[0]);
+                $this->update_ldap_user_roles($matching_roles, $user);
                 return new Result(Result::SUCCESS, $this->username, ["Authenticated Successfully"]);
             } else {
                 return new Result(Result::FAILURE_UNCATEGORIZED, $this->username, ["Not allowed use of application"]);
@@ -134,6 +135,33 @@ class LdapAdapter implements AdapterInterface
             $user->USERNAME = $info['samaccountname'][0];
             $user->PASSWORD = $user->generate_uuid();
             $user->create();
+        }
+        
+        return $user;
+    }
+    
+    public function update_ldap_user_roles($matching_roles, UserModel $user) 
+    {
+        $current_roles = [];
+        $data = [];
+        
+        $role = new RoleModel($this->adapter);
+        $i = $user->memberOf();
+        foreach ($i as $id => $r) {
+            $current_roles[] = $r['ROLENAME'];
+        }
+        
+        $new_roles = array_diff($matching_roles, $current_roles);
+        
+        
+        foreach ($new_roles as $id => $rolename) {
+            $role->read(['ROLENAME' => $rolename]);
+            
+            $data['UUID'] = $user->generate_uuid();
+            $data['USER'] = $user->UUID;
+            $data['ROLE'] = $role->UUID;
+            
+            $user->assignRole($data);
         }
     }
     
