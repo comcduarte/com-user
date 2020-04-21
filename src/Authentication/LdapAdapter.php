@@ -6,6 +6,7 @@ use Laminas\Authentication\Adapter\AdapterInterface;
 use Laminas\Db\Adapter\AdapterAwareTrait;
 use User\Model\RoleModel;
 use Settings\Model\SettingsModel;
+use User\Model\UserModel;
 
 class LdapAdapter implements AdapterInterface
 {
@@ -20,13 +21,53 @@ class LdapAdapter implements AdapterInterface
             return new Result(Result::SUCCESS, $this->username, ["Authenticated Successfully"]);
         }
         
+        $ldap_result = $this->authenticate_ldap_user();
+        switch ($ldap_result->getCode()) {
+            case Result::FAILURE_CREDENTIAL_INVALID:
+                return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->username, ['Invalid Credentials']);
+                break;
+            case Result::FAILURE_UNCATEGORIZED:
+                return new Result(Result::FAILURE_UNCATEGORIZED, $this->username, ["Not allowed use of application"]);
+                break;
+            case Result::FAILURE:  
+                return new Result(Result::FAILURE, $this->username, ["General Failure"]);
+                break;
+            case Result::SUCCESS:
+                return new Result(Result::SUCCESS, $this->username, ["Authenticated Successfully"]);
+            default:
+                break;
+        }
+        
+        return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->username, ["Credential Invalid"]);
+        
+    }
+    
+    public function authenticate_local_user()
+    {
+        $local_adapter = new AuthAdapter();
+        
+        $local_adapter->setDbAdapter($this->adapter);
+        $local_adapter->setUsername($this->username);
+        $local_adapter->setPassword($this->password);
+        $result = $local_adapter->authenticate();
+        
+        switch ($result->getCode()) {
+            case Result::SUCCESS:
+                return TRUE;
+                break;
+                
+            default:
+                return FALSE;
+                break;
+        }
+    }
+    
+    public function authenticate_ldap_user()
+    {
         $settings = new SettingsModel($this->adapter);
         $settings->MODULE = 'USER';
         $user_settings = $settings->get_module_settings();
         
-//         $domain = 'MIDNET\\';
-//         $server = 'IT-DC001.midnet.cityofmiddletown.com';
-//         $base_dn = "DC=MidNet,DC=CityOfMiddletown,DC=com";
         $domain = $user_settings['LDAP_DOMAIN'];
         $server = $user_settings['LDAP_SERVER'];
         $base_dn = $user_settings['LDAP_BASE_DN'];
@@ -67,34 +108,32 @@ class LdapAdapter implements AdapterInterface
             $matching_roles = array_intersect($ary_roles, $ary_ldap_groups);
             
             if (sizeof($matching_roles)) {
+                $this->update_ldap_user($info[0]);
                 return new Result(Result::SUCCESS, $this->username, ["Authenticated Successfully"]);
             } else {
                 return new Result(Result::FAILURE_UNCATEGORIZED, $this->username, ["Not allowed use of application"]);
             }
-            
-            
         } else {
             return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->username, ['Invalid Credentials']);
         }
     }
     
-    public function authenticate_local_user()
+    public function update_ldap_user($info) 
     {
-        $local_adapter = new AuthAdapter();
+        $user = new UserModel($this->adapter);
+        $user_exists = $user->read(['USERNAME' => $info['samaccountname'][0]]);
         
-        $local_adapter->setDbAdapter($this->adapter);
-        $local_adapter->setUsername($this->username);
-        $local_adapter->setPassword($this->password);
-        $result = $local_adapter->authenticate();
         
-        switch ($result->getCode()) {
-            case Result::SUCCESS:
-                return TRUE;
-                break;
-                
-            default:
-                return FALSE;
-                break;
+        $user->FNAME = $info['givenname'][0];
+        $user->LNAME = $info['sn'][0];
+        $user->EMAIL = $info['mail'][0];
+        
+        if ($user_exists) {
+            $user->update();
+        } else {
+            $user->USERNAME = $info['samaccountname'][0];
+            $user->PASSWORD = $user->generate_uuid();
+            $user->create();
         }
     }
     
