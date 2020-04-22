@@ -121,11 +121,13 @@ class UserConfigController extends AbstractConfigController
         $role = new RoleModel($this->adapter);
         $role->UUID = $role->generate_uuid();
         $role->ROLENAME = 'EVERYONE';
+        $role->PRIORITY = 10;
         $role->create();
         
         $role->UUID = $role->generate_uuid();
         $role_admin = $role->UUID;
         $role->ROLENAME = 'admin';
+        $role->PRIORITY = 10;
         $role->create();
         
         /******************************

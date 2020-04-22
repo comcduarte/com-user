@@ -15,6 +15,8 @@ use User\Form\Factory\UserFormFactory;
 use User\Form\Factory\UserRolesFormFactory;
 use User\Service\Factory\AuthenticationServiceFactory;
 use User\Service\Factory\UserModelAdapterFactory;
+use User\Form\RoleForm;
+use User\Form\Factory\RoleFormFactory;
 
 return [
     'router' => [
@@ -126,6 +128,7 @@ return [
     ],
     'form_elements' => [
         'factories' => [
+            RoleForm::class => RoleFormFactory::class,
             UserForm::class => UserFormFactory::class,
             UserRolesForm::class => UserRolesFormFactory::class,
         ],

@@ -21,6 +21,7 @@ class RoleController extends AbstractBaseController
             'UUID' => 'UUID',
             'Role' => 'ROLENAME',
             'Parents' => 'PARENT',
+            'Priority' => 'PRIORITY',
         ]);
         $select->where(['roles.STATUS' => $this->model::ACTIVE_STATUS]);
         $select->order(['PRIORITY']);

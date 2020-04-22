@@ -3,9 +3,13 @@ namespace User\Form;
 
 use Components\Form\AbstractBaseForm;
 use Laminas\Form\Element\Text;
+use Components\Form\Element\DatabaseSelect;
+use Laminas\Db\Adapter\AdapterAwareTrait;
 
 class RoleForm extends AbstractBaseForm
 {
+    use AdapterAwareTrait;
+    
     public function init()
     {
         parent::init();
@@ -26,7 +30,7 @@ class RoleForm extends AbstractBaseForm
         
         $this->add([
             'name' => 'PARENT',
-            'type' => Text::class,
+            'type' => DatabaseSelect::class,
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'PARENT',
@@ -34,6 +38,13 @@ class RoleForm extends AbstractBaseForm
             ],
             'options' => [
                 'label' => 'Parent Role',
+                'database_adapter' => $this->adapter,
+                'database_table' => 'roles',
+                'database_id_column' => 'ROLENAME',
+                'database_value_columns' => [
+                    'ROLE' => 'ROLENAME',
+                    'PRIORITY',
+                ],
             ],
         ],['priority' => 100]);
         
