@@ -140,6 +140,8 @@ return [
                 'route' => 'role',
                 'class' => 'dropdown',
                 'order' => 80,
+                'resource' => 'role/default',
+                'privilege' => 'index',
                 'pages' => [
                     [
                         'label' => 'Add New Role',
@@ -157,6 +159,8 @@ return [
                 'route' => 'user',
                 'class' => 'dropdown',
                 'order' => 90,
+                'resource' => 'user/default',
+                'privilege' => 'index',
                 'pages' => [
                     [
                         'label' => 'Add New User',
@@ -179,6 +183,8 @@ return [
                         'label'  => 'User Settings',
                         'route'  => 'user/config',
                         'action' => 'index',
+                        'resource' => 'user/config',
+                        'privilege' => 'index',
                     ],
                 ],
             ],
