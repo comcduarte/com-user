@@ -118,6 +118,15 @@ return [
             'role/default' => [],
         ],
     ],
+    'controller_plugins' => [
+        'factories' => [
+            User\Controller\Plugin\CurrentUser::class => User\Controller\Plugin\Factory\CurrentUserFactory::class,
+        ],
+        'aliases' => [
+            'currentUser' => User\Controller\Plugin\CurrentUser::class,
+        ],
+        
+    ],
     'controllers' => [
         'factories' => [
             User\Controller\AuthController::class => User\Controller\Factory\AuthControllerFactory::class,
