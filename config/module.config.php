@@ -155,11 +155,15 @@ return [
                     [
                         'label' => 'Add New Role',
                         'route' => 'role/default',
+                        'resource' => 'role/default',
+                        'privilege' => 'create',
                         'action' => 'create',
                     ],
                     [
                         'label' => 'List Roles',
                         'route' => 'role/default',
+                        'resource' => 'role/default',
+                        'privilege' => 'index',
                     ],
                 ],
             ],
@@ -174,11 +178,15 @@ return [
                     [
                         'label' => 'Add New User',
                         'route' => 'user/default',
+                        'resource' => 'user/default',
+                        'privilege' => 'create',
                         'action' => 'create',
                     ],
                     [
                         'label' => 'List Users',
                         'route' => 'user/default',
+                        'resource' => 'user/default',
+                        'privilege' => 'index',
                     ],
                 ],
             ],
