@@ -89,6 +89,7 @@ class LdapAdapter implements AdapterInterface
             $ary_ldap_groups = [];
             $matches = [];
             foreach ($info[0]['memberof'] as $id => $ldap_group) {
+                if (! is_numeric($id)) { continue; }
                 preg_match('/CN=([a-zA-Z\s-]+)/', $ldap_group, $matches);
                 if ($matches[1]) {
                     $ary_ldap_groups[] = $matches[1];
@@ -127,7 +128,7 @@ class LdapAdapter implements AdapterInterface
         
         $user->FNAME = $info['givenname'][0];
         $user->LNAME = $info['sn'][0];
-        $user->EMAIL = $info['mail'][0];
+//         $user->EMAIL = $info['mail'][0];
         
         if ($user_exists) {
             $user->update();
