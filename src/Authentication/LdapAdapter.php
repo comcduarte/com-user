@@ -23,23 +23,28 @@ class LdapAdapter implements AdapterInterface
         
         $ldap_result = $this->authenticate_ldap_user();
         switch ($ldap_result->getCode()) {
+            case Result::FAILURE:
+                return new Result(Result::FAILURE, $this->username, ["General Failure"]);
+                break;
+            case Result::FAILURE_IDENTITY_NOT_FOUND:
+                return new Result(Result::FAILURE, $this->username, ["Identity not found"]);
+                break;
+            case Result::FAILURE_IDENTITY_AMBIGUOUS:
+                return new Result(Result::FAILURE, $this->username, ["Identity Ambiguous"]);
+                break;
             case Result::FAILURE_CREDENTIAL_INVALID:
                 return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->username, ['Invalid Credentials']);
                 break;
             case Result::FAILURE_UNCATEGORIZED:
                 return new Result(Result::FAILURE_UNCATEGORIZED, $this->username, ["Not allowed use of application"]);
                 break;
-            case Result::FAILURE:  
-                return new Result(Result::FAILURE, $this->username, ["General Failure"]);
-                break;
             case Result::SUCCESS:
                 return new Result(Result::SUCCESS, $this->username, ["Authenticated Successfully"]);
+                break;
             default:
+                return new Result(Result::FAILURE, $this->username, ["Unsupported Exception", $ldap_result->getMessages()]);
                 break;
         }
-        
-        return new Result(Result::FAILURE_CREDENTIAL_INVALID, $this->username, ["Credential Invalid"]);
-        
     }
     
     public function authenticate_local_user()
