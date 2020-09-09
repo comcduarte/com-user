@@ -120,7 +120,7 @@ class UserModel extends AbstractBaseModel
     /**
      * Return array for role membership
      */
-    public function memberOf()
+    public function memberOf(bool $asList = FALSE)
     {
         $role = new RoleModel($this->adapter);
         
@@ -138,6 +138,16 @@ class UserModel extends AbstractBaseModel
             return FALSE;
         }
         
-        return $resultSet->toArray();
+        $retval = $resultSet->toArray();
+        
+        if ($asList) {
+            $list = [];
+            foreach ($retval as $role) {
+                $list[] = $role['ROLENAME'];
+            }
+            $retval = $list;
+        }
+        
+        return $retval;
     }
 }
