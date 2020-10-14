@@ -214,14 +214,18 @@ return [
                     [
                         'label' => 'Logout',
                         'route' => 'user/logout',
+                        'resource' => 'user/logout',
                         'controller' => 'auth',
                         'action' => 'logout',
+                        'privilege' => 'logout',
                     ],
                     [
                         'label' => 'Change Password',
                         'route' => 'user/default',
+                        'resource' => 'user/default',
                         'controller' => 'user',
                         'action' => 'changepw',
+                        'privilege' => 'changepw',
                     ],
                 ],
             ],
