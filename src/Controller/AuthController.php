@@ -40,7 +40,7 @@ class AuthController extends AbstractActionController
                     $storage->write($data['USERNAME']);
                     
                     $this->flashMessenger()->addMessage($result->getMessages());
-                    $this->redirect()->toRoute('home');
+                    $this->redirect()->toRoute('user/login/redirect');
                 } else {
                     $this->flashMessenger()->addMessage($result->getMessages());
                     $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);

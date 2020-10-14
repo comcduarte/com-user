@@ -17,6 +17,7 @@ use User\Service\Factory\AuthenticationServiceFactory;
 use User\Service\Factory\UserModelAdapterFactory;
 use User\Form\RoleForm;
 use User\Form\Factory\RoleFormFactory;
+use Application;
 
 return [
     'router' => [
@@ -77,6 +78,20 @@ return [
                             'defaults' => [
                                 'controller' => User\Controller\AuthController::class,
                                 'action' => 'login',
+                            ],
+                        ],
+                        'may_terminate' => TRUE,
+                        'child_routes' => [
+                            'redirect' => [
+                                'type' => Literal::class,
+                                'priority' => 10,
+                                'options' => [
+                                    'route' => '/redirect',
+                                    'defaults' => [
+                                        'controller' => Application\Controller\IndexController::class,
+                                        'action' => 'workout',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
@@ -265,6 +280,7 @@ return [
         'template_map' => [
             'user/config' => __DIR__ . '/../view/user/config/index.phtml',
             'user/update' => __DIR__ . '/../view/user/user/update.phtml',
+            'user/login' => __DIR__ . '/../view/user/auth/login.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
