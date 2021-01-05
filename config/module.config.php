@@ -91,6 +91,17 @@ return [
                             ],
                         ],
                     ],
+                    'dashboard' => [
+                        'type' => Segment::class,
+                        'priority' => 10,
+                        'options' => [
+                            'route' => '/dashboard[/:action]',
+                            'defaults' => [
+                                'action' => 'index',
+                                'controller' => User\Controller\DashboardController::class,
+                            ],
+                        ],
+                    ],
                     'default' => [
                         'type' => Segment::class,
                         'priority' => -100,
@@ -130,6 +141,7 @@ return [
     'controllers' => [
         'factories' => [
             User\Controller\AuthController::class => User\Controller\Factory\AuthControllerFactory::class,
+            User\Controller\DashboardController::class => User\Controller\Factory\DashboardControllerFactory::class,
             User\Controller\RoleController::class => User\Controller\Factory\RoleControllerFactory::class,
             User\Controller\UserController::class => User\Controller\Factory\UserControllerFactory::class,
             User\Controller\UserConfigController::class => User\Controller\Factory\UserConfigControllerFactory::class,
@@ -211,7 +223,7 @@ return [
                 'label' => 'Welcome',
                 'route' => 'user',
                 'pages' => [
-                    [
+                    'logout' => [
                         'label' => 'Logout',
                         'route' => 'user/logout',
                         'resource' => 'user/logout',
@@ -219,7 +231,14 @@ return [
                         'action' => 'logout',
                         'privilege' => 'logout',
                     ],
-                    [
+                    'profile' => [
+                        'label' => 'Profile',
+                        'route' => 'user/dashboard',
+                        'resource' => 'user/dashboard',
+                        'action' => 'index',
+                        'privilege' => 'index',
+                    ],
+                    'changepw' => [
                         'label' => 'Change Password',
                         'route' => 'user/default',
                         'resource' => 'user/default',
