@@ -29,6 +29,7 @@ class DashboardController extends AbstractActionController
         $user = $this->currentUser();
         $user_entity = new UserEntity($this->adapter);
         $user_entity->employee->setDbAdapter($this->emp_adapter);
+        $user_entity->department->setDbAdapter($this->emp_adapter);
         $user_entity->getUser($user->UUID);
         
         $w2 = [];
