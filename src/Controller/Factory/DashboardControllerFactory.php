@@ -14,6 +14,7 @@ class DashboardControllerFactory implements FactoryInterface
         $adapter = $container->get('user-model-adapter');
         $controller->setFiles($container->get(FilesModel::class));
         $controller->setDbAdapter($adapter);
+        $controller->emp_adapter = $container->get('employee-model-adapter');
         return $controller;
     }
 }

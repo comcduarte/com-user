@@ -6,6 +6,7 @@ use Laminas\Db\Adapter\AdapterAwareTrait;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use User\Model\UserModel;
+use Application\Model\Entity\UserEntity;
 
 class DashboardController extends AbstractActionController
 {
@@ -15,6 +16,7 @@ class DashboardController extends AbstractActionController
      * @var FilesModel
      */
     private $files;
+    public $emp_adapter;
     
     
     public function indexAction()
@@ -25,10 +27,13 @@ class DashboardController extends AbstractActionController
          * @var $user UserModel
          */
         $user = $this->currentUser();
+        $user_entity = new UserEntity($this->adapter);
+        $user_entity->employee->setDbAdapter($this->emp_adapter);
+        $user_entity->getUser($user->UUID);
         
         $w2 = [];
         $f1095c = [];
-        $files = $this->files->FindFiles($user->UUID);
+        $files = $this->files->FindFiles($user_entity->employee->UUID);
         
         /**
          * Parse array to only include required fields for specific files.
@@ -55,7 +60,7 @@ class DashboardController extends AbstractActionController
         
         $view->setVariable('w2', $w2);
         $view->setVariable('f1095c', $f1095c);
-        $view->setVariable('user', $user->UUID);
+        $view->setVariable('employee', $user_entity->employee->UUID);
         
         
         return $view;
