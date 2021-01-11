@@ -34,6 +34,7 @@ class DashboardController extends AbstractActionController
         
         $w2 = [];
         $f1095c = [];
+        $paystubs = [];
         $files = $this->files->FindFiles($user_entity->employee->UUID);
         
         /**
@@ -56,11 +57,20 @@ class DashboardController extends AbstractActionController
                     'Uploaded' => $file['DATE_CREATED']
                 ];
             }
+            
+            if (substr($file['NAME'], 0, 7) === "HR_CITZ") {
+                $paystubs[] = [
+                    'UUID' => $file['UUID'],
+                    'Filename' => $file['NAME'],
+                    'Uploaded' => $file['DATE_CREATED']
+                ];
+            }
         }
         
         
         $view->setVariable('w2', $w2);
         $view->setVariable('f1095c', $f1095c);
+        $view->setVariable('paystubs', $paystubs);
         $view->setVariable('employee', $user_entity->employee->UUID);
         
         
