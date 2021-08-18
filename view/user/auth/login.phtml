@@ -6,6 +6,7 @@ $form->setAttribute('action', $this->url('user/login'));
 $form->prepare();
 
 echo $this->form()->openTag($form);
+echo $this->formRow($form->get('REFERRING_URL'));
 ?>
 
 <div class="container">

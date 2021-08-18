@@ -4,6 +4,7 @@ namespace User\Controller;
 use Laminas\Db\Adapter\AdapterAwareTrait;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use User\Form\UserLoginForm;
 
 class AuthController extends AbstractActionController
 {
@@ -18,7 +19,13 @@ class AuthController extends AbstractActionController
         $view = new ViewModel();
         
         $request = $this->getRequest();
+        $referring_url = $_SERVER['HTTP_REFERER'];
+        
+        /**
+         * @var UserLoginForm $form
+         */
         $form = $this->getAuthentication_form();
+        $form->get('REFERRING_URL')->setValue($referring_url);
         
         if ($request->isPost()) {
             /**
@@ -40,7 +47,7 @@ class AuthController extends AbstractActionController
                     $storage->write($data['USERNAME']);
                     
                     $this->flashMessenger()->addMessage($result->getMessages());
-                    $this->redirect()->toRoute('home');
+                    return $this->redirect()->toUrl($request->getPost('REFERRING_URL'));
                 } else {
                     $this->flashMessenger()->addMessage($result->getMessages());
                     $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);
