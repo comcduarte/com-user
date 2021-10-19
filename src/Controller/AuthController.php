@@ -46,10 +46,10 @@ class AuthController extends AbstractActionController
                     $storage = $this->authentication_service->getStorage();
                     $storage->write($data['USERNAME']);
                     
-                    $this->flashMessenger()->addMessage($result->getMessages());
+                    $this->flashMessenger()->addSuccessMessage($result->getMessages());
                     return $this->redirect()->toUrl($request->getPost('REFERRING_URL'));
                 } else {
-                    $this->flashMessenger()->addMessage($result->getMessages());
+                    $this->flashMessenger()->addErrorMessage($result->getMessages());
                     $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);
                 }
             }
