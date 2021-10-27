@@ -6,11 +6,21 @@ use Laminas\Form\Element\Csrf;
 use Laminas\Form\Element\Password;
 use Laminas\Form\Element\Submit;
 use Laminas\Form\Element\Text;
+use Laminas\Form\Element\Hidden;
 
 class UserLoginForm extends Form
 {
     public function init()
     {
+        $this->add([
+            'name' => 'REFERRING_URL',
+            'type' => Hidden::class,
+            'attributes' => [
+                'class' => 'form-control',
+                'id' => 'REFERRING_URL',
+            ],
+        ]);
+        
         $this->add([
             'name' => 'USERNAME',
             'type' => Text::class,
