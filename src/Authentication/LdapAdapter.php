@@ -133,7 +133,7 @@ class LdapAdapter implements AdapterInterface
         
         $user->FNAME = $info['givenname'][0];
         $user->LNAME = $info['sn'][0];
-//         $user->EMAIL = $info['mail'][0];
+        $user->EMAIL = $info['mail'][0];
         
         if ($user_exists) {
             $user->update();
