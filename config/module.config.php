@@ -127,6 +127,7 @@ return [
             'user/config' => [],
             'user/default' => [],
             'role/default' => [],
+            'user/logout' => ['logout'],
         ],
     ],
     'controller_plugins' => [
