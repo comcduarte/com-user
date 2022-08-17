@@ -2,7 +2,7 @@
 namespace User\Controller\Factory;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use User\Controller\UserConfigController;
 
 class UserConfigControllerFactory implements FactoryInterface

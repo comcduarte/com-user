@@ -1,7 +1,7 @@
 <?php
 namespace User\Controller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use User\Controller\RoleController;
 use User\Form\RoleForm;
