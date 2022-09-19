@@ -1,7 +1,7 @@
 <?php
 namespace User\Form\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use User\Form\UserRolesForm;
 
 class UserRolesFormFactory

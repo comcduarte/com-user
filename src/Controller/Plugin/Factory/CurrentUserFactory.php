@@ -1,7 +1,7 @@
 <?php
 namespace User\Controller\Plugin\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use User\Controller\Plugin\CurrentUser;
 
 class CurrentUserFactory
