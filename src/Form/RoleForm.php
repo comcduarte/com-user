@@ -32,7 +32,7 @@ class RoleForm extends AbstractBaseForm
             'name' => 'PARENT',
             'type' => DatabaseSelect::class,
             'attributes' => [
-                'class' => 'form-control',
+                'class' => 'form-select',
                 'id' => 'PARENT',
                 'placeholder' => '',
             ],
