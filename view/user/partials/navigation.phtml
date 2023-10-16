@@ -22,7 +22,7 @@ if ($user = $this->currentUser()) {
             $label = $this->translate($label);
             $label = $this->escapehtml($label);
             printf('<li class="nav-item dropdown %s">' . "\n", ($class ? '' . $class : ''));
-            printf('<a href="%s" class="nav-link dropdown-toggle" data-toggle="dropdown">%s<b class="caret"></b></a>' . "\n", $page->getHref(), $label);
+            printf('<a href="%s" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">%s<b class="caret"></b></a>' . "\n", $page->getHref(), $label);
             echo '<div class="dropdown-menu" aria-labelledby="navbarDropdown">' . "\n";
 
             foreach ($page as $subPage) {

@@ -9,14 +9,14 @@ use User\Authentication\AuthAdapter;
 use User\Authentication\LdapAdapter;
 use User\Authentication\Factory\AuthAdapterFactory;
 use User\Authentication\Factory\LdapAdapterFactory;
+use User\Form\RoleForm;
 use User\Form\UserForm;
 use User\Form\UserRolesForm;
+use User\Form\Factory\RoleFormFactory;
 use User\Form\Factory\UserFormFactory;
 use User\Form\Factory\UserRolesFormFactory;
 use User\Service\Factory\AuthenticationServiceFactory;
 use User\Service\Factory\UserModelAdapterFactory;
-use User\Form\RoleForm;
-use User\Form\Factory\RoleFormFactory;
 
 return [
     'router' => [
@@ -202,7 +202,7 @@ return [
                         'route'  => 'user/config',
                         'action' => 'index',
                         'resource' => 'user/config',
-                        'privilege' => 'index',
+                        'privilege' => 'menu',
                     ],
                 ],
             ],

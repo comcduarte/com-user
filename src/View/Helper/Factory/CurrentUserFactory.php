@@ -1,6 +1,6 @@
 <?php
 namespace User\View\Helper\Factory;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use User\View\Helper\CurrentUser;
 
 class CurrentUserFactory
