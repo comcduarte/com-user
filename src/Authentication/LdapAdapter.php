@@ -153,14 +153,14 @@ class LdapAdapter implements AdapterInterface
         
         $role = new RoleModel($this->adapter);
         $i = $user->memberOf();
-        foreach ($i as $id => $r) {
+        foreach ($i as $r) {
             $current_roles[] = $r['ROLENAME'];
         }
         
         $new_roles = array_diff($matching_roles, $current_roles);
         
         
-        foreach ($new_roles as $id => $rolename) {
+        foreach ($new_roles as $rolename) {
             $role->read(['ROLENAME' => $rolename]);
             
             $data['UUID'] = $user->generate_uuid();
