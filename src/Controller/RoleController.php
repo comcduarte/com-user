@@ -13,6 +13,7 @@ class RoleController extends AbstractBaseController
     {
         $view = new ViewModel();
         $view = parent::indexAction();
+        $view->setTemplate('base/subtable');
         
         $sql = new Sql($this->adapter);
         $select = new Select();
@@ -37,8 +38,29 @@ class RoleController extends AbstractBaseController
             $header = array_keys($data[0]);
         }
         
-        $view->setVariable('header', $header);
-        $view->setVariable('data', $data);
+        $params = [
+            [
+                'route' => 'role/default',
+                'action' => 'update',
+                'key' => 'UUID',
+                'label' => 'Update',
+            ],
+            [
+                'route' => 'role/default',
+                'action' => 'delete',
+                'key' => 'UUID',
+                'label' => 'Delete',
+            ],
+        ];
+        
+        $view->setvariables ([
+            'data' => $data,
+            'header' => $header,
+            'primary_key' => $this->model->getPrimaryKey(),
+            'params' => $params,
+            'search' => true,
+            'title' => 'Roles',
+        ]);
         
         return $view;
     }
