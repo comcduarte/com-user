@@ -43,24 +43,25 @@ class UserModel extends AbstractBaseModel
     
     public function getInputFilter()
     {
-        $this->inputFilter = parent::getInputFilter();
+        if (!$this->inputFilter) {
+            $this->inputFilter = parent::getInputFilter();
         
-        $this->inputFilter->add([
-            'name' => 'CONFIRM_PASSWORD',
-            'validators' => [
-                [
-                    'name' => Identical::class,
-                    'options' => [
-                        'token' => 'PASSWORD',
-                        'messages' => [
-                            Identical::NOT_SAME => 'Passwords do not match.',
-                            Identical::MISSING_TOKEN => 'Password or Confirmation missing.',
+            $this->inputFilter->add([
+                'name' => 'CONFIRM_PASSWORD',
+                'validators' => [
+                    [
+                        'name' => Identical::class,
+                        'options' => [
+                            'token' => 'PASSWORD',
+                            'messages' => [
+                                Identical::NOT_SAME => 'Passwords do not match.',
+                                Identical::MISSING_TOKEN => 'Password or Confirmation missing.',
+                            ],
                         ],
                     ],
                 ],
-            ],
-        ]);
-        
+            ]);
+        }
         return $this->inputFilter;
     }
     
