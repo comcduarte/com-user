@@ -8,7 +8,6 @@ use Laminas\Db\Sql\Join;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Predicate\Like;
-use Laminas\InputFilter\InputFilter;
 use Laminas\View\Model\ViewModel;
 use User\Form\UserChangePasswordForm;
 
@@ -87,14 +86,6 @@ class UserController extends AbstractBaseController
     public function updateAction()
     {
         $view = new ViewModel();
-        
-        /**
-         * Remove Password and Confirm Password Fields on Update
-         * @var InputFilter $inputFilter
-         */
-        $inputFilter = $this->model->getInputFilter();
-        $inputFilter->remove('PASSWORD');
-        $inputFilter->remove('CONFIRM_PASSWORD');
         $this->form->remove('PASSWORD');
         $this->form->remove('CONFIRM_PASSWORD');
         
