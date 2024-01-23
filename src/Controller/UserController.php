@@ -10,9 +10,12 @@ use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Predicate\Like;
 use Laminas\View\Model\ViewModel;
 use User\Form\UserChangePasswordForm;
+use Laminas\Log\LoggerAwareTrait;
 
 class UserController extends AbstractBaseController
 {
+    use LoggerAwareTrait;
+    
     public $user_roles_form;
     
     public function indexAction()
@@ -147,8 +150,10 @@ class UserController extends AbstractBaseController
                 
                 if ($result) {
                     $this->flashmessenger()->addSuccessMessage('Password Change Successful');
+                    $this->logger->info(sprintf('Code:%s Identity:%s Message:%s', '0', $this->model->USERNAME, 'Password Change Successful'));
                 } else {
                     $this->flashmessenger()->addErrorMessage('Unable to change password');
+                    $this->logger->info(sprintf('Code:%s Identity:%s Message:%s', '-1', $this->model->USERNAME, 'Unable to change password'));
                 }
                 
                 return $this->redirect()->toRoute('user/default');

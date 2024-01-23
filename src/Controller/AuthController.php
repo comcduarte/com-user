@@ -5,10 +5,13 @@ use Laminas\Db\Adapter\AdapterAwareTrait;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use User\Form\UserLoginForm;
+use Laminas\Log\LoggerAwareTrait;
+use Laminas\Authentication\Result;
 
 class AuthController extends AbstractActionController
 {
     use AdapterAwareTrait;
+    use LoggerAwareTrait;
     
     private $authentication_adapter;
     private $authentication_service;
@@ -42,14 +45,20 @@ class AuthController extends AbstractActionController
                 $this->authentication_adapter->setUsername($data['USERNAME']);
                 $this->authentication_adapter->setPassword($data['PASSWORD']);
                 $result = $this->authentication_adapter->authenticate();
+                
+                /**
+                 * @var Result $result
+                 */
                 if ($result->isValid()) {
                     $storage = $this->authentication_service->getStorage();
                     $storage->write($data['USERNAME']);
                     
                     $this->flashMessenger()->addSuccessMessage($result->getMessages());
+                    $this->logger->info(sprintf('Code:%s Identity:%s Message:%s', $result->getCode(), $result->getIdentity(), json_encode($result->getMessages())));
                     return $this->redirect()->toUrl($request->getPost('REFERRING_URL'));
                 } else {
                     $this->flashMessenger()->addErrorMessage($result->getMessages());
+                    $this->logger->info(sprintf('Code:%s Identity:%s Message:%s', $result->getCode(), $result->getIdentity(), json_encode($result->getMessages())));
                     $this->redirect()->toRoute('user', ['controller' => 'auth','action' => 'login']);
                 }
             }

@@ -19,6 +19,9 @@ class UserControllerFactory implements FactoryInterface
         $model = new UserModel($adapter);
         $form = $container->get('FormElementManager')->get(UserForm::class);
         
+        $logger = $container->get('syslogger');
+        $controller->setLogger($logger);
+        
         $user_roles_form = $container->get('FormElementManager')->get(UserRolesForm::class);
         $user_roles_form->setDbAdapter($adapter);
         $controller->user_roles_form = $user_roles_form;
