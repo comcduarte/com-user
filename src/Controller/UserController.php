@@ -8,9 +8,18 @@ use Laminas\Db\Sql\Join;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Predicate\Like;
-use Laminas\View\Model\ViewModel;
-use User\Form\UserChangePasswordForm;
 use Laminas\Log\LoggerAwareTrait;
+use Laminas\Mail\Protocol\Smtp as SmtpProtocol;
+use Laminas\Mail\Transport\Smtp as SmtpTransport;
+use Laminas\Mime\Mime;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Resolver\AggregateResolver;
+use Settings\Model\SettingsModel;
+use User\Form\UserChangePasswordForm;
+use User\Form\UserRegisterForm;
+use User\Model\UserModel;
+use User\Model\RoleModel;
 
 class UserController extends AbstractBaseController
 {
@@ -33,7 +42,6 @@ class UserController extends AbstractBaseController
             'First Name' => 'FNAME',
             'Last Name' => 'LNAME',
         ]);
-        $select->where(['users.STATUS' => $this->model::ACTIVE_STATUS]);
         $select->order(['USERNAME']);
         
         $statement = $sql->prepareStatementForSqlObject($select);
@@ -197,5 +205,161 @@ class UserController extends AbstractBaseController
         
         $url = $this->getRequest()->getHeader('Referer')->getUri();
         return $this->redirect()->toUrl($url);
+    }
+
+    public function registerAction()
+    {
+        /**
+         * 
+         * @var \Laminas\View\Model\ViewModel $view
+         * @var UserModel $model;
+         */
+        $view = new ViewModel();
+        
+        $model = $this->model;
+        $view->setTemplate('base/create');
+        
+        $route = $this->getEvent()->getRouteMatch()->getMatchedRouteName();
+        $params = array_merge(
+            $this->getEvent()->getRouteMatch()->getParams(),
+            ['action' => 'confirm']
+            );
+        
+        
+        $form = new UserRegisterForm();
+        $form->init();
+        
+        $form->bind($model);
+        
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = array_merge_recursive(
+                $request->getPost()->toArray(),
+                $request->getFiles()->toArray()
+                );
+            
+            $form->setData($post);
+            
+            /**
+             * @var UserModel $model
+             */
+            if ($form->isValid()) {
+                $model->STATUS = UserModel::INACTIVE_STATUS;
+                $model->create();
+                
+                $role = new RoleModel($this->adapter);
+                $role->read(['ROLENAME' => 'EVERYONE']);
+                
+                /**
+                 * Add to EVERYONE Group
+                 * @var array $data
+                 */
+                $data = [
+                    'UUID' => $model->generate_uuid(),
+                    'USER' => $model->UUID,
+                    'ROLE' => $role->UUID
+                ];
+                $model->assignRole($data);
+                unset($role);
+                
+                $this->sendConfirmationEmail($model->EMAIL, $model->UUID);
+                $this->getLogger()->info(sprintf('User Registered [%s]',$model->USERNAME));
+                return $this->redirect()->toRoute($route, $params);
+            } else {
+                $this->logger->err('An error has occured');
+            }
+        }
+        
+        $view->setVariables([
+            'form' => $form,
+            'title' => 'Add New Record',
+        ]);
+        
+        return $view;
+    }
+
+    public function confirmAction()
+    {
+        $view = new ViewModel();
+        if (! $this->params()->fromRoute('uuid', 0)) {
+            $view->setTemplate('user/user/confirm');
+            return $view;
+        } else {
+            $uuid = $this->params()->fromRoute('uuid', 0);
+            
+            /**
+             * 
+             * @var UserModel $model
+             */
+            $model = $this->model;
+            $model->read(['UUID' => $uuid]);
+            
+            $model->STATUS = UserModel::REGISTERED_STATUS;
+            $model->update();
+            
+            return $this->redirect()->toRoute('user/login');
+        }
+    }
+
+    private function sendConfirmationEmail(string $to, $uuid)
+    {
+        /****************************************
+         * Confirmation Email
+         ****************************************/
+        $view = new PhpRenderer();
+        
+        $settings = new SettingsModel($this->adapter);
+        
+        $resolver = new AggregateResolver();
+        $view->setResolver($resolver);
+        
+        $map = new \Laminas\View\Resolver\TemplateMapResolver([
+            'notifications/registration-confirmation' => __DIR__ . '/../../view/user/notifications/registration-confirmation.phtml',
+        ]);
+        $resolver->attach($map);
+        
+        $link = $_SERVER['HTTP_ORIGIN'] . $this->url()->fromRoute('user/default', ['action' => 'confirm', 'uuid' => $uuid]);
+        
+        $viewModel = new ViewModel();
+        $viewModel->setTemplate('notifications/registration-confirmation')->setVariable('link', $link);
+        $view->viewModel()->setRoot($viewModel);
+        
+        $message = new \Laminas\Mail\Message();
+        $body = new \Laminas\Mime\Message();
+        
+        $html = $view->render($viewModel);
+        $part = new \Laminas\Mime\Part($html);
+        $part->type = Mime::TYPE_HTML;
+        
+        $settings->read(['MODULE' => 'USER', 'SETTING' => 'FROM']);
+        $message->setFrom($settings->VALUE);
+        $message->setTo($to);
+        $message->setSubject('Registration Confirmation');
+        
+        $body->addPart($part);
+        
+        $message->setBody($body);
+        
+        try {
+            $settings->read(['MODULE' => 'USER', 'SETTING' => 'SERVER']);
+            $protocol = new SmtpProtocol($settings->VALUE);
+            $protocol->connect();
+            $settings->read(['MODULE' => 'USER', 'SETTING' => 'HELO']);
+            $protocol->helo($settings->VALUE);
+            
+            $transport = new SmtpTransport();
+            $transport->setConnection($protocol);
+            $protocol->rset();
+            $transport->send($message);
+        } catch (\Exception $e) {
+            /**
+             * @var \Laminas\Log\Logger $logger
+             */
+            $logger = $this->logger;
+            $logger->err($e->getMessage());
+            $logger->info("Error sending email:" . $to);
+        }
+        
+        $protocol->disconnect();
     }
 }

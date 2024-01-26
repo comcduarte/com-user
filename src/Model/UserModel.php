@@ -11,10 +11,13 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Validator\Identical;
 use Exception;
+use Laminas\Validator\Db\NoRecordExists;
 
 
 class UserModel extends AbstractBaseModel
 {
+    const REGISTERED_STATUS = 3;
+    
     public $USERNAME;
     public $FNAME;
     public $LNAME;
@@ -44,6 +47,20 @@ class UserModel extends AbstractBaseModel
     public function getInputFilter()
     {
         $this->inputFilter = parent::getInputFilter();
+        
+        $this->inputFilter->add([
+            'name' => 'USERNAME',
+            'validators' => [
+                [
+                    'name' => NoRecordExists::class,
+                    'options' => [
+                        'table' => UserModel::getTableName(),
+                        'field' => 'USERNAME',
+                        'adapter' => $this->adapter,
+                    ],
+                ],
+            ],
+        ]);
         
         $this->inputFilter->add([
             'name' => 'CONFIRM_PASSWORD',
