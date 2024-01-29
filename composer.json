@@ -1,0 +1,8 @@
+{
+	"require" : {
+		"laminas/laminas-db" : "~2.18",
+		"laminas/laminas-log" : "~2.17",
+		"laminas/laminas-authentication" : "~2.16",
+		"laminas/laminas-crypt" : "~3.11"
+	}
+}
