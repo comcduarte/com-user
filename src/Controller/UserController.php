@@ -263,10 +263,10 @@ class UserController extends AbstractBaseController
                 unset($role);
                 
                 $this->sendConfirmationEmail($model->EMAIL, $model->UUID);
-                $this->getLogger()->info(sprintf('User Registered [%s]',$model->USERNAME));
+                $this->logger->info(sprintf('User Registered [%s]',$model->USERNAME));
                 return $this->redirect()->toRoute($route, $params);
             } else {
-                $this->logger->err('An error has occured');
+                $this->logger->err('Form is invalid', $form->getMessages());
             }
         }
         
