@@ -22,7 +22,12 @@ class AuthController extends AbstractActionController
         $view = new ViewModel();
         
         $request = $this->getRequest();
-        $referring_url = $_SERVER['HTTP_REFERER'];
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $referring_url = $_SERVER['HTTP_REFERER'];
+        } else {
+            $referring_url = $this->url()->fromRoute('home');
+        }
+        
         
         /**
          * @var UserLoginForm $form
