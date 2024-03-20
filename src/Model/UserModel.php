@@ -9,9 +9,7 @@ use Laminas\Db\Sql\Insert;
 use Laminas\Db\Sql\Join;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
-use Laminas\Validator\Identical;
 use Exception;
-use Laminas\Validator\Db\NoRecordExists;
 
 
 class UserModel extends AbstractBaseModel
@@ -47,37 +45,6 @@ class UserModel extends AbstractBaseModel
     public function getInputFilter()
     {
         $this->inputFilter = parent::getInputFilter();
-        
-        $this->inputFilter->add([
-            'name' => 'USERNAME',
-            'validators' => [
-                [
-                    'name' => NoRecordExists::class,
-                    'options' => [
-                        'table' => UserModel::getTableName(),
-                        'field' => 'USERNAME',
-                        'adapter' => $this->adapter,
-                    ],
-                ],
-            ],
-        ]);
-        
-        $this->inputFilter->add([
-            'name' => 'CONFIRM_PASSWORD',
-            'validators' => [
-                [
-                    'name' => Identical::class,
-                    'options' => [
-                        'token' => 'PASSWORD',
-                        'messages' => [
-                            Identical::NOT_SAME => 'Passwords do not match.',
-                            Identical::MISSING_TOKEN => 'Password or Confirmation missing.',
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-        
         return $this->inputFilter;
     }
     

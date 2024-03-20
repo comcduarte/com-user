@@ -12,6 +12,7 @@ use Laminas\Log\LoggerAwareTrait;
 use Laminas\Mail\Protocol\Smtp as SmtpProtocol;
 use Laminas\Mail\Transport\Smtp as SmtpTransport;
 use Laminas\Mime\Mime;
+use Laminas\Validator\Db\NoRecordExists;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\AggregateResolver;
@@ -20,6 +21,7 @@ use User\Form\UserChangePasswordForm;
 use User\Form\UserRegisterForm;
 use User\Model\UserModel;
 use User\Model\RoleModel;
+use Laminas\InputFilter\InputFilter;
 
 class UserController extends AbstractBaseController
 {
@@ -88,6 +90,26 @@ class UserController extends AbstractBaseController
         
         $bcrypt = new Bcrypt();
         $this->model->PASSWORD = $bcrypt->create($this->model->PASSWORD);
+        
+        /**
+         * 
+         * @var InputFilter $inputfilter
+         */
+        $inputfilter = $this->model->getInputFilter();
+        $inputfilter->add([
+            'name' => 'USERNAME',
+            'validators' => [
+                [
+                    'name' => NoRecordExists::class,
+                    'options' => [
+                        'table' => UserModel::getTableName(),
+                        'field' => 'USERNAME',
+                        'adapter' => $this->adapter,
+                    ],
+                ],
+            ],
+        ]);
+        $this->model->setInputFilter($inputfilter);
         
         $view = parent::createAction();
         
