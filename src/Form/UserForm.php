@@ -59,7 +59,6 @@ class UserForm extends AbstractBaseForm
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'ADDR1',
-                'required' => 'true',
                 'placeholder' => '',
             ],
             'options' => [
@@ -86,7 +85,6 @@ class UserForm extends AbstractBaseForm
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'CITY',
-                'required' => 'true',
                 'placeholder' => '',
             ],
             'options' => [
@@ -100,7 +98,6 @@ class UserForm extends AbstractBaseForm
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'STATE',
-                'required' => 'true',
                 'placeholder' => '',
             ],
             'options' => [
@@ -114,7 +111,6 @@ class UserForm extends AbstractBaseForm
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'ZIP',
-                'required' => 'true',
                 'placeholder' => '',
             ],
             'options' => [
